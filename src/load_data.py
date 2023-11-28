@@ -3,7 +3,6 @@ import os
 import pandas as pd
 import numpy as np
 import time
-from collections import defaultdict as ddict
 from collections import defaultdict
 
 
@@ -115,7 +114,7 @@ class KnowledgeGraphYG:
 
         year_list.sort()
 
-        freq=ddict(int)
+        freq=defaultdict(int)
         for year in year_list:
             freq[year]=freq[year]+1
 
