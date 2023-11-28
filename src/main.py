@@ -19,7 +19,7 @@ parser.add_argument(
 
 parser.add_argument(
     '--dataset',
-    default='icews14',
+    default='./datasets/icews14',
     type=str, help='dataset to train on')
 
 parser.add_argument(

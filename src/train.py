@@ -142,7 +142,7 @@ def sample_negatives_t(X, C, n_day):
 
 def train(task ='LinkPrediction',
           modelname='ATISE',
-          data_dir='yago',
+          data_dir='./datasets/yago',
           dim=500,
           batch=512,
           lr=0.1,
@@ -169,14 +169,15 @@ def train(task ='LinkPrediction',
     """
     Data Loading
     """
-    if data_dir == 'yago' or data_dir == 'wikidata':
+    data_name = data_dir.split("/")[-1]
+    if data_name == 'yago' or data_name == 'wikidata':
         kg = KnowledgeGraphYG(data_dir=data_dir, count = count,rev_set = rev_set)
         n_day = kg.n_time
         min_epoch=50
-    elif data_dir=='icews14':
+    elif data_name=='icews14':
         n_day = 365
         kg = KnowledgeGraph(data_dir=data_dir,gran=gran,rev_set = rev_set)
-    elif data_dir == 'icews05-15':
+    elif data_name == 'icews05-15':
         n_day = 4017
         kg = KnowledgeGraph(data_dir=data_dir,gran=gran,rev_set = rev_set)      
 
@@ -232,7 +233,7 @@ def train(task ='LinkPrediction',
     try: 
         os.makedirs(path)
     except:
-        print('path existed')
+        print(f'{path} EXISTED!!!')
         return
     
     

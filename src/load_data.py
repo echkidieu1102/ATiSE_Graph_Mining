@@ -379,5 +379,5 @@ class KnowledgeGraph:
         
      
 if __name__ == "__main__":
-    # KnowledgeGraphYG(data_dir="./datasets/yago")
-    KnowledgeGraph(data_dir="./datasets/icews14")
+    KnowledgeGraphYG(data_dir="./datasets/yago")
+    # KnowledgeGraph(data_dir="./datasets/icews14")

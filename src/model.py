@@ -13,7 +13,7 @@ from torch.nn import functional as F
 from torch.autograd import Variable
 from numpy.random import RandomState
 
-    
+# TeRo
 class TeRo(nn.Module):
     def __init__(self, kg, embedding_dim, batch_size, learning_rate, L, gran, gamma, n_day, gpu=True):
         super(TeRo, self).__init__()
@@ -295,9 +295,7 @@ class TeRo(nn.Module):
 
         return rank
 
-    
-
-
+# ATiSE
 class ATISE(nn.Module):
     def __init__(self, kg, embedding_dim, batch_size, learning_rate, gamma, cmin, cmax, gpu=True):
         super(ATISE, self).__init__()
@@ -309,35 +307,48 @@ class ATISE(nn.Module):
         self.gamma = gamma
         self.cmin = cmin
         self.cmax = cmax
+
+
         # Nets
         self.emb_E = torch.nn.Embedding(self.kg.n_entity, self.embedding_dim, padding_idx=0)
-        self.emb_E_var = torch.nn.Embedding(self.kg.n_entity, self.embedding_dim, padding_idx=0)
         self.emb_R = torch.nn.Embedding(self.kg.n_relation, self.embedding_dim, padding_idx=0)
-        self.emb_R_var = torch.nn.Embedding(self.kg.n_relation, self.embedding_dim, padding_idx=0)
+
         self.emb_TE = torch.nn.Embedding(self.kg.n_entity, self.embedding_dim, padding_idx=0)
-        self.alpha_E = torch.nn.Embedding(self.kg.n_entity, 1, padding_idx=0)
-        self.beta_E = torch.nn.Embedding(self.kg.n_entity, self.embedding_dim, padding_idx=0)
-        self.omega_E = torch.nn.Embedding(self.kg.n_entity, self.embedding_dim, padding_idx=0)
         self.emb_TR = torch.nn.Embedding(self.kg.n_relation, self.embedding_dim, padding_idx=0)
-        self.alpha_R = torch.nn.Embedding(self.kg.n_relation, 1, padding_idx=0)
-        self.beta_R = torch.nn.Embedding(self.kg.n_relation, self.embedding_dim, padding_idx=0)
+
+        self.emb_E_var = torch.nn.Embedding(self.kg.n_entity, self.embedding_dim, padding_idx=0)
+        self.emb_R_var = torch.nn.Embedding(self.kg.n_relation, self.embedding_dim, padding_idx=0)
+
+        self.omega_E = torch.nn.Embedding(self.kg.n_entity, self.embedding_dim, padding_idx=0)
         self.omega_R = torch.nn.Embedding(self.kg.n_relation, self.embedding_dim, padding_idx=0)
+
+        self.alpha_E = torch.nn.Embedding(self.kg.n_entity, 1, padding_idx=0)
+        self.alpha_R = torch.nn.Embedding(self.kg.n_relation, 1, padding_idx=0)
+
+        self.beta_R = torch.nn.Embedding(self.kg.n_relation, self.embedding_dim, padding_idx=0)
+        self.beta_E = torch.nn.Embedding(self.kg.n_entity, self.embedding_dim, padding_idx=0)
         
     
         # Initialization
         r = 6 / np.sqrt(self.embedding_dim)
         self.emb_E.weight.data.uniform_(-r, r)
-        self.emb_E_var.weight.data.uniform_(self.cmin, self.cmax)
         self.emb_R.weight.data.uniform_(-r, r)
-        self.emb_R_var.weight.data.uniform_(self.cmin, self.cmax)
+
         self.emb_TE.weight.data.uniform_(-r, r)
-        self.alpha_E.weight.data.uniform_(0, 0)
-        self.beta_E.weight.data.uniform_(0, 0)
-        self.omega_E.weight.data.uniform_(-r, r)
         self.emb_TR.weight.data.uniform_(-r, r)
+
+        self.emb_E_var.weight.data.uniform_(self.cmin, self.cmax)
+        self.emb_R_var.weight.data.uniform_(self.cmin, self.cmax)
+        
+        self.omega_E.weight.data.uniform_(-r, r)                                # Difference paper
+        self.omega_R.weight.data.uniform_(-r, r)                                # Difference paper
+
+        self.alpha_E.weight.data.uniform_(0, 0)
         self.alpha_R.weight.data.uniform_(0, 0)
+
+        self.beta_E.weight.data.uniform_(0, 0)
         self.beta_R.weight.data.uniform_(0, 0)
-        self.omega_R.weight.data.uniform_(-r, r)
+        
 
         # Regularization
         self.normalize_embeddings()
@@ -361,20 +372,14 @@ class ATISE(nn.Module):
             d_i = Variable(torch.from_numpy(d_i))
 
         pi = 3.14159265358979323846
-        h_mean = self.emb_E(h_i).view(-1, self.embedding_dim) + \
-            d_i.view(-1, 1) * self.alpha_E(h_i).view(-1, 1) * self.emb_TE(h_i).view(-1, self.embedding_dim) \
-            + self.beta_E(h_i).view(-1, self.embedding_dim) * torch.sin(
-            2 * pi * self.omega_E(h_i).view(-1, self.embedding_dim) * d_i.view(-1, 1))
-            
-        t_mean = self.emb_E(t_i).view(-1, self.embedding_dim) + \
-            d_i.view(-1, 1) * self.alpha_E(t_i).view(-1, 1) * self.emb_TE(t_i).view(-1, self.embedding_dim) \
-            + self.beta_E(t_i).view(-1, self.embedding_dim) * torch.sin(
-            2 * pi * self.omega_E(t_i).view(-1, self.embedding_dim) * d_i.view(-1, 1))
-            
-        r_mean = self.emb_R(r_i).view(-1, self.embedding_dim) + \
-            d_i.view(-1, 1) * self.alpha_R(r_i).view(-1, 1) * self.emb_TR(r_i).view(-1, self.embedding_dim) \
-            + self.beta_R(r_i).view(-1, self.embedding_dim) * torch.sin(
-            2 * pi * self.omega_R(r_i).view(-1, self.embedding_dim) * d_i.view(-1, 1))
+        h_mean = self.emb_E(h_i).view(-1, self.embedding_dim) + d_i.view(-1, 1) * self.alpha_E(h_i).view(-1, 1) * self.emb_TE(h_i).view(-1, self.embedding_dim) \
+            + self.beta_E(h_i).view(-1, self.embedding_dim) * torch.sin(2 * pi * self.omega_E(h_i).view(-1, self.embedding_dim) * d_i.view(-1, 1))
+
+        t_mean = self.emb_E(t_i).view(-1, self.embedding_dim) + d_i.view(-1, 1) * self.alpha_E(t_i).view(-1, 1) * self.emb_TE(t_i).view(-1, self.embedding_dim) \
+            + self.beta_E(t_i).view(-1, self.embedding_dim) * torch.sin(2 * pi * self.omega_E(t_i).view(-1, self.embedding_dim) * d_i.view(-1, 1))
+
+        r_mean = self.emb_R(r_i).view(-1, self.embedding_dim) + d_i.view(-1, 1) * self.alpha_R(r_i).view(-1, 1) * self.emb_TR(r_i).view(-1, self.embedding_dim) \
+            + self.beta_R(r_i).view(-1, self.embedding_dim) * torch.sin(2 * pi * self.omega_R(r_i).view(-1, self.embedding_dim) * d_i.view(-1, 1))
 
 
         h_var = self.emb_E_var(h_i).view(-1, self.embedding_dim)
@@ -421,11 +426,13 @@ class ATISE(nn.Module):
 
     def normalize_embeddings(self):
         self.emb_E.weight.data.renorm_(p=2, dim=0, maxnorm=1)
-        self.emb_E_var.weight.data.uniform_(self.cmin, self.cmax)
         self.emb_R.weight.data.renorm_(p=2, dim=0, maxnorm=1)
-        self.emb_R_var.weight.data.uniform_(self.cmin, self.cmax)
+
         self.emb_TE.weight.data.renorm_(p=2, dim=0, maxnorm=1)
         self.emb_TR.weight.data.renorm_(p=2, dim=0, maxnorm=1)
+
+        self.emb_E_var.weight.data.uniform_(self.cmin, self.cmax)
+        self.emb_R_var.weight.data.uniform_(self.cmin, self.cmax)
 
         
     def regularization_embeddings(self):
