@@ -34,7 +34,10 @@ parser.add_argument(
 
 parser.add_argument(
     '--batch',
-    default=512, type=int,
+    # DEBUG
+    default=4,
+    # default=512,
+    type=int,
     help='number of batch size')
 
 parser.add_argument(
@@ -49,7 +52,10 @@ parser.add_argument(
 
 parser.add_argument(
     '--eta',
-    default=10, type=int,
+    # DEBUG
+    default=3,
+    # default=10,
+    type=int,
     help='number of negative samples per positive')
 
 parser.add_argument(

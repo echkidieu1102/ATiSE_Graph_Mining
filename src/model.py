@@ -386,8 +386,8 @@ class ATISE(nn.Module):
         t_var = self.emb_E_var(t_i).view(-1, self.embedding_dim)
         r_var = self.emb_R_var(r_i).view(-1, self.embedding_dim)
 
-        out1 = torch.sum((h_var+t_var)/r_var, 1)+torch.sum(((r_mean-h_mean+t_mean)**2)/r_var, 1)-self.embedding_dim
-        out2 = torch.sum(r_var/(h_var+t_var), 1)+torch.sum(((h_mean-t_mean-r_mean)**2)/(h_var+t_var), 1)-self.embedding_dim
+        out1 = torch.sum((h_var+t_var)/r_var, 1) + torch.sum(((r_mean-h_mean+t_mean)**2)/r_var, 1) - self.embedding_dim
+        out2 = torch.sum(r_var/(h_var+t_var), 1) + torch.sum(((h_mean-t_mean-r_mean)**2)/(h_var+t_var), 1) - self.embedding_dim
         out = (out1+out2)/4
         
 
