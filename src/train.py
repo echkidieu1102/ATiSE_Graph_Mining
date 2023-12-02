@@ -88,8 +88,8 @@ def sample_negatives(X, C, kg):
         Second column contains index of relationships.
         Third column contains index of tail entities.
 
-    n_e: int
-        Number of entities in dataset.
+    C: int
+        Number of negative samples per positive
 
     Returns:
     --------
@@ -155,6 +155,8 @@ def train(task ='LinkPrediction',
           lossname = 'logloss',
           cmin = 0.001,
           cuda_able = True,
+        #   Debug
+        #   rev_set = 0,
           rev_set = 1,
           temp = 0.5,
           gran = 7,

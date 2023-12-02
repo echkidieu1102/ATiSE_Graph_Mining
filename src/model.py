@@ -395,33 +395,33 @@ class ATISE(nn.Module):
     
     
     
-    def log_rank_loss(self, y_pos, y_neg, temp=0):
-        M = y_pos.size(0)
-        N = y_neg.size(0)
-        y_pos = self.gamma-y_pos
-        y_neg = self.gamma-y_neg
+    def log_rank_loss(self, y_pos_score, y_neg_score, temp=0):
+        M = y_pos_score.size(0)
+        N = y_neg_score.size(0)
+        y_pos_score = self.gamma-y_pos_score
+        y_neg_score = self.gamma-y_neg_score
         C = int(N / M)
-        y_neg = y_neg.view(C, -1).transpose(0, 1)
-        p = F.softmax(temp * y_neg)
-        loss_pos = torch.sum(F.softplus(-1 * y_pos))
-        loss_neg = torch.sum(p * F.softplus(y_neg))
+        y_neg_score = y_neg_score.view(C, -1).transpose(0, 1)
+        p = F.softmax(temp * y_neg_score)
+        loss_pos = torch.sum(F.softplus(-1 * y_pos_score))
+        loss_neg = torch.sum(p * F.softplus(y_neg_score))
         loss = (loss_pos + loss_neg) / 2 / M
         if self.gpu:
             loss = loss.cuda()
         return loss
 
 
-    def rank_loss(self, y_pos, y_neg):
-        M = y_pos.size(0)
-        N = y_neg.size(0)
+    def rank_loss(self, y_pos_score, y_neg_score):
+        M = y_pos_score.size(0)
+        N = y_neg_score.size(0)
         C = int(N / M)
-        y_pos = y_pos.repeat(C)
+        y_pos_score = y_pos_score.repeat(C)
         if self.gpu:
             target = Variable(torch.from_numpy(-np.ones(N, dtype=np.float32))).cuda()
         else:
             target = Variable(torch.from_numpy(-np.ones(N, dtype=np.float32))).cpu()
         loss = nn.MarginRankingLoss(margin=self.gamma)
-        loss = loss(y_pos, y_neg, target)
+        loss = loss(y_pos_score, y_neg_score, target)
         return loss
 
     def normalize_embeddings(self):

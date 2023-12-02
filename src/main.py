@@ -24,7 +24,20 @@ parser.add_argument(
 
 parser.add_argument(
     '--max_epoch',
-    default=5000, type=int,
+    # DEBUG
+    # default=5000,
+    # default=15,
+    default=5,
+    type=int,
+    help='number of total epochs (min value: 500)')
+
+parser.add_argument(
+    '--min_epoch',
+    # DEBUG
+    # default=250,
+    # default=15,
+    default=1,
+    type=int,
     help='number of total epochs (min value: 500)')
 
 parser.add_argument(
@@ -97,6 +110,7 @@ def main(args):
           batch=args.batch,
           lr =args.lr,
           max_epoch=args.max_epoch,
+          min_epoch=args.min_epoch,
           gamma = args.gamma,
           lossname = args.loss,
           negsample_num=args.eta,
