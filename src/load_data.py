@@ -74,6 +74,11 @@ class KnowledgeGraphYG:
         validation_df = np.array(validation_df).tolist()
         test_df = pd.read_table(os.path.join(self.data_dir, test_file), header=None)
         test_df = np.array(test_df).tolist()
+        # DEBUG
+        # training_df = training_df[:50]
+        # validation_df = validation_df[:50]
+        # test_df = test_df[:25]
+        
  #       triple_df = pd.read_table(os.path.join(self.data_dir, triple_file), header=None)
  #       triple_df = np.array(triple_df).tolist()
         triple_df = np.concatenate([training_df,validation_df,test_df],axis=0)

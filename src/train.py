@@ -293,6 +293,7 @@ def train(task ='LinkPrediction',
                 loss = model.rank_loss(pos_score, neg_score)
             losses.append(loss.item())
 
+
             solver.zero_grad()
             loss.backward()
             solver.step()
@@ -395,3 +396,5 @@ def train(task ='LinkPrediction',
                 patience = 0
 
 
+if __name__ == '__main__':
+    train()
