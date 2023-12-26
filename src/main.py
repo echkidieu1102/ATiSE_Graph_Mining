@@ -73,7 +73,7 @@ parser.add_argument(
 
 parser.add_argument(
     '--timedisc',
-    default=1, type=int,
+    default=0, type=int,
     help='method of discretizing time intervals')
 
 parser.add_argument(
